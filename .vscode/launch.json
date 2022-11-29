@@ -8,11 +8,17 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
+            "env": {
+                "NODE_ENV": "development"
+            },
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "runtimeExecutable": "npm",
-            "args": ["run", "dev"]
+            "args": [
+                "run",
+                "dev"
+            ]
         }
     ]
 }
