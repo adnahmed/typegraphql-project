@@ -1,29 +1,36 @@
 import "reflect-metadata";
-import {buildSchema} from "type-graphql";
-import {ApolloServer} from '@apollo/server'
-import {ApolloServerPluginLandingPageLocalDefault} from '@apollo/server/plugin/landingPage/default'
-import {startStandaloneServer} from '@apollo/server/standalone'
+import { buildSchema } from "type-graphql";
+import { ApolloServer } from '@apollo/server'
+import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default'
+import { startStandaloneServer } from '@apollo/server/standalone'
 import { Container } from 'typedi'
+import path from 'path'
 import env from './env'
-
-import RecipeResolver, {RecipeNotFoundError} from "./Recipe";
+import Country from "./types/country";
+import { CountryScalar } from "./scalars/country";
 
 (async () => {
     const schema = await buildSchema({
-        resolvers: [RecipeResolver],
-        orphanedTypes: [RecipeNotFoundError],
+        resolvers: [],
+        orphanedTypes: [],
         container: Container,
+        emitSchemaFile: path.resolve(__dirname, "schema.gql"),
+        scalarsMap: [{ type: Country, scalar: CountryScalar }]
     })
 
     const server = new ApolloServer({
         schema,
         csrfPrevention: true,
         introspection: true,
-        plugins: [ApolloServerPluginLandingPageLocalDefault()]
+        plugins: [
+            env.isDev ? ApolloServerPluginLandingPageLocalDefault() : ApolloServerPluginLandingPageProductionDefault()
+        ]
     })
+    // declare route for batch query
 
-    startStandaloneServer(server, {
-        listen: {port: env.PORT}
+    const { url } = await startStandaloneServer(server, {
+        listen: { port: env.PORT }
     })
+    console.log(`Server is running, GraphQL Playground available at ${url}`);
 })();
 
