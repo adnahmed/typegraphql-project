@@ -5,9 +5,9 @@ import { User } from '@generated/type-graphql'
 import { JwtPayload } from "jsonwebtoken";
 import { GraphQLError } from "graphql";
 import { isString } from "class-validator";
+import { FastifyRequest } from 'fastify'
 import Context from "../types/context.interface";
 import env from '../env'
-
 const prisma = new PrismaClient();
 async function getUser(token: string): Promise<User | undefined> {
     function isJwtPayload(payload: string | JwtPayload): payload is JwtPayload {
@@ -28,7 +28,7 @@ async function getUser(token: string): Promise<User | undefined> {
     }
 }
 
-export default async function getContext(req: IncomingMessage): Promise<Context> {
+export default async function getContext(req: FastifyRequest): Promise<Context> {
     let user: undefined | User = undefined
     const authHeader = req.headers.authorization
     const BearerPrefix = 'Bearer '
