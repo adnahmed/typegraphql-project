@@ -5,8 +5,14 @@ import {
     ApolloServerPluginLandingPageLocalDefault,
     ApolloServerPluginLandingPageProductionDefault
 } from '@apollo/server/plugin/landingPage/default'
-import { startStandaloneServer } from '@apollo/server/standalone'
 import path from 'path'
+import Fastify from 'fastify'
+import compress from '@fastify/compress'
+import cors, { FastifyCorsOptions } from '@fastify/cors'
+import rateLimit, { RateLimitOptions } from '@fastify/rate-limit'
+import helment from '@fastify/helmet'
+import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastify'
+
 import env from './env'
 import Context from "./types/context.interface";
 import bootstrap from './pubSub'
@@ -14,7 +20,7 @@ import { UserResolver } from './models/User';
 import authChecker from "./authorization/authChecker";
 import getContext from "./extensions/server.context";
 
-
+const fastify = Fastify();
 void (async () => {
     const schema = await buildSchema({
         resolvers: [UserResolver],
@@ -25,18 +31,32 @@ void (async () => {
         authChecker,
     })
 
+
     const server = new ApolloServer<Context>({
         schema,
         csrfPrevention: true,
         introspection: true,
         plugins: [
-            env.isDev ? ApolloServerPluginLandingPageLocalDefault() : ApolloServerPluginLandingPageProductionDefault()
+            env.isDev ? ApolloServerPluginLandingPageLocalDefault() : ApolloServerPluginLandingPageProductionDefault(),
+            fastifyApolloDrainPlugin(fastify)
         ]
     })
+    await server.start()
 
-    const { url } = await startStandaloneServer<Context>(server, {
-        context: ({req}) => getContext(req),
-        listen: { port: env.PORT }
+    await fastify.register(rateLimit, rateLimitOptions)
+    await fastify.register(helment)
+    await fastify.register(cors, corsOptions)
+    await fastify.register(compress)
+
+    await fastify.register(fastifyApollo<Context>(server), {
+        context: getContext
     })
-    console.log(`Server is running, GraphQL Playground available at ${url}`);
+    await fastify.listen({
+        port: env.PORT,
+    })
+    console.log(`Server is running, GraphQL Playground available at http://localhost:${env.PORT}/graphql`);
 })();
+
+const rateLimitOptions: RateLimitOptions = {}
+
+const corsOptions: FastifyCorsOptions = {}
