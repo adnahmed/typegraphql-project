@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "types": [
+      "@types/node"
+    ],
+    "noEmit": true,
+    "allowJs": true,
+    "experimentalDecorators": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "tools/**/*.ts",
+    ".eslintrc.json",
+    "jest.config.base.js",
+    "jest.config.js",
+    "jest.preset.js",
+    "tests/jest-resolver.js"
+  ]
+}
