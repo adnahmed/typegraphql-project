@@ -1,1 +1,9 @@
 node_modules
+/.build
+/.cache
+/.git
+/.husky
+/.yarn
+/**/__snapshots__
+/**/node_modules
+/coverage
