@@ -80,4 +80,17 @@ void (async () => {
 
 const rateLimitOptions: RateLimitOptions = {}
 
-const corsOptions: FastifyCorsOptions = {}
+const corsOptions: FastifyCorsOptions = {
+    origin: (origin, cb) => {
+        const hostname = new URL(origin).hostname
+        if (hostname === 'localhost') {
+            // Request from localhost will pass
+            cb(null, true)
+            return
+        }
+        cb(new Error("Not allowed"), false)
+    },
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}
