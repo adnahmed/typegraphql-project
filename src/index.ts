@@ -9,13 +9,13 @@ import path from 'path'
 import Fastify from 'fastify'
 import compress from '@fastify/compress'
 import cors, { FastifyCorsOptions } from '@fastify/cors'
-import rateLimit, { RateLimitOptions } from '@fastify/rate-limit'
+import rateLimit, { RateLimitPluginOptions } from '@fastify/rate-limit'
 import helment from '@fastify/helmet'
 import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastify'
 
 import env from './env'
 import Context from "./types/context.interface";
-import bootstrap from './pubSub'
+import {bootstrap_pubSub, cache} from './redis'
 import { UserResolver } from './models/User';
 import authChecker from "./authorization/authChecker";
 import getContext from "./extensions/server.context";
@@ -48,7 +48,7 @@ void (async () => {
         validate: false,
         orphanedTypes: [],
         emitSchemaFile: path.resolve(__dirname, "schema.graphql"),
-        pubSub: bootstrap(),
+        pubSub: bootstrap_pubSub(),
         authChecker,
     })
 
@@ -65,6 +65,15 @@ void (async () => {
     await server.start()
 
     await fastify.register(rateLimit, rateLimitOptions)
+    fastify.setNotFoundHandler({
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        preHandler: fastify.rateLimit({
+            max: 4,
+            timeWindow: 500
+        })
+    }, function (request, reply) {
+        void reply.code(404).send('You have requested an unknown route.')
+    })
     await fastify.register(helment)
     await fastify.register(cors, corsOptions)
     await fastify.register(compress)
@@ -78,7 +87,16 @@ void (async () => {
     console.log(`Server is running, GraphQL Playground available at http://localhost:${env.PORT}/graphql`);
 })();
 
-const rateLimitOptions: RateLimitOptions = {}
+const rateLimitOptions: RateLimitPluginOptions = {
+    global: true,
+    max: 3000,
+    timeWindow: 1000, // 1 second,
+    allowList: ['127.0.0.1'],
+    keyGenerator: (request) =>  
+        request.headers.authorization !== undefined 
+        ? request.headers.authorization : request.ip,
+    redis: cache
+}
 
 const corsOptions: FastifyCorsOptions = {
     origin: (origin, cb) => {
