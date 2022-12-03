@@ -15,7 +15,7 @@ import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastif
 
 import env from './env'
 import Context from "./types/context.interface";
-import {bootstrap_pubSub, cache} from './redis'
+import { bootstrap_pubSub, cache } from './redis'
 import { UserResolver } from './models/User';
 import authChecker from "./authorization/authChecker";
 import getContext from "./extensions/server.context";
@@ -81,6 +81,7 @@ void (async () => {
     await fastify.register(fastifyApollo<Context>(server), {
         context: getContext
     })
+
     await fastify.listen({
         port: env.PORT,
     })
@@ -92,19 +93,19 @@ const rateLimitOptions: RateLimitPluginOptions = {
     max: 3000,
     timeWindow: 1000, // 1 second,
     allowList: ['127.0.0.1'],
-    keyGenerator: (request) =>  
-        request.headers.authorization !== undefined 
-        ? request.headers.authorization : request.ip,
-    redis: cache
+    keyGenerator: (request) =>
+        request.headers.authorization !== undefined
+            ? request.headers.authorization : request.ip,
+    redis: cache.status === 'ready' ? cache : undefined
 }
 
 const corsOptions: FastifyCorsOptions = {
-    origin: (origin, cb) => {
+    origin: (origin: string, cb) => {
+        if (!origin) return cb(null, true)
         const hostname = new URL(origin).hostname
         if (hostname === 'localhost') {
             // Request from localhost will pass
-            cb(null, true)
-            return
+            return cb(null, true)
         }
         cb(new Error("Not allowed"), false)
     },
