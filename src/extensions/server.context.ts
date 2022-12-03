@@ -32,7 +32,7 @@ export default async function getContext(req: FastifyRequest): Promise<Context> 
     let user: undefined | User = undefined
     const authHeader = req.headers.authorization
     const BearerPrefix = 'Bearer '
-    const isToken = authHeader.startsWith(BearerPrefix)
+    const isToken = authHeader && authHeader.startsWith(BearerPrefix)
     if (isToken) {
         const token = authHeader.replaceAll(BearerPrefix, '')
         const isValidToken = new RegExp('^[A-Za-z0-9-.]+$')
