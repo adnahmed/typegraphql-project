@@ -20,7 +20,7 @@ model User {
   country     Country
   email       String? @unique @db.VarChar(255)
   mobilePhone Int?    @unique
-  /// @TypeGraphQL.omit(output: true, input: ["where", "orderBy"])
+  /// @TypeGraphQL.omit(output: true)
   password    String
   roles       Role[]
 }
