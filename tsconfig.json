@@ -1,13 +1,18 @@
 {
     "compilerOptions": {
-        "target": "es2021",
+        "target": "es2022",
         "module": "commonjs",
+        "rootDir": "src/",
+        "typeRoots": ["node_modules/"],
         "esModuleInterop": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "lib": [
-            "ES2021",
+            "ES2022",
             "ESNext.AsyncIterable"
         ]
     },
+    "include": [
+        "src/**/*.ts"
+    ]
 }
