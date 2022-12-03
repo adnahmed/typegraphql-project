@@ -29,6 +29,9 @@
       ".\\tsconfig.json"
     ],
     "ecmaVersion": 2020,
+    "ecmaFeatures": {
+      "experimentalDecorators": true
+    },
     "sourceType": "module"
   },
   "rules": {}
