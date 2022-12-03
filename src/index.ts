@@ -19,8 +19,29 @@ import bootstrap from './pubSub'
 import { UserResolver } from './models/User';
 import authChecker from "./authorization/authChecker";
 import getContext from "./extensions/server.context";
+import { PinoLoggerOptions } from "fastify/types/logger";
 
-const fastify = Fastify();
+const envToLogger: Record<string, PinoLoggerOptions> = {
+    development: {
+        transport: {
+            target: 'pino-pretty',
+            options: {
+                translateTime: 'HH:MM:ss Z',
+                ignore: 'pid,hostname',
+            },
+        },
+    },
+    production: { level: 'info' },
+    test: { level: 'info' }
+}
+
+const fastify = Fastify({
+    logger: {
+        ...envToLogger[env.APP_ENV],
+        redact: env.isDevelopment ? undefined : ['req.headers.authorization']
+    }
+});
+
 void (async () => {
     const schema = await buildSchema({
         resolvers: [UserResolver],

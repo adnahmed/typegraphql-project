@@ -1,6 +1,7 @@
 import { cleanEnv, num, str } from 'envalid'
 const isDevelopment = process.env.NODE_ENV === 'development'
 const env = cleanEnv(process.env, {
+    APP_ENV: str({ choices: ['development', 'production', 'test'], default: process.env.NODE_ENV }),
     PORT: num({ default: 4000 }),
     JWT_SECRET: str({ default: isDevelopment ? 'mysecret' : null }),
     SALT_ROUNDS: num({ default: 10 }),
