@@ -255,8 +255,11 @@ enum Country {
   ZW
 }
 
-type Query {
+type Mutation {
   createAccount(user: UserCreateInput!): String!
+}
+
+type Query {
   login(email: String, mobilePhone: Int, password: String!): String!
   me: User!
 }

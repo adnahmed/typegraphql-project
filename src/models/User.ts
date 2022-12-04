@@ -1,4 +1,4 @@
-import { Arg, Args, ArgsType, Authorized, Ctx, Field, Int, Query, Resolver } from "type-graphql";
+import { Arg, Args, ArgsType, Authorized, Ctx, Field, Int, Mutation, Query, Resolver } from "type-graphql";
 import { User, UserCreateInput } from '@generated/type-graphql'
 import Context from '../types/context.interface';
 import bcrypt from 'bcrypt'
@@ -52,7 +52,7 @@ export class UserResolver {
         throw new Error("Invalid User ID or Password provided.")
     }
 
-    @Query(returns => String)
+    @Mutation(returns => String)
     async createAccount(
         @Arg("user") user: UserCreateInput,
         @Ctx() context: Context
