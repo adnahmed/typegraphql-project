@@ -3,11 +3,12 @@ import { PrismaClient } from "@prisma/client";
 import * as jwt from 'jsonwebtoken'
 import { User } from '@generated/type-graphql'
 import { JwtPayload } from "jsonwebtoken";
-import { GraphQLError } from "graphql";
 import { isString } from "class-validator";
 import { FastifyRequest } from 'fastify'
 import Context from "../types/context.interface";
 import env from '../env'
+import { Logger } from './logger.service';
+const logger = new Logger();
 const prisma = new PrismaClient();
 async function getUser(token: string): Promise<User | undefined> {
     function isJwtPayload(payload: string | JwtPayload): payload is JwtPayload {
@@ -20,10 +21,9 @@ async function getUser(token: string): Promise<User | undefined> {
         }
         if (isString(decoded))
             return await prisma.user.findFirst({ where: { id: decoded } })
-        throw new Error("Unknown Payload Object found in JWT.")
     } catch (err) {
         if (err instanceof Error) {
-            throw new GraphQLError(err.message);
+            logger.log('error', err.message)
         }
     }
 }
