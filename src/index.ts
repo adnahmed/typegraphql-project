@@ -10,7 +10,7 @@ import Fastify from 'fastify'
 import compress from '@fastify/compress'
 import cors, { FastifyCorsOptions } from '@fastify/cors'
 import rateLimit, { RateLimitPluginOptions } from '@fastify/rate-limit'
-import helment from '@fastify/helmet'
+import helmet, { FastifyHelmetOptions } from '@fastify/helmet'
 import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastify'
 
 import env from './env'
@@ -58,7 +58,9 @@ void (async () => {
         csrfPrevention: true,
         introspection: true,
         plugins: [
-            env.isDev ? ApolloServerPluginLandingPageLocalDefault() : ApolloServerPluginLandingPageProductionDefault(),
+            env.isDev 
+            ? ApolloServerPluginLandingPageLocalDefault() 
+            : ApolloServerPluginLandingPageProductionDefault(),
             fastifyApolloDrainPlugin(fastify)
         ]
     })
@@ -74,7 +76,7 @@ void (async () => {
     }, function (request, reply) {
         void reply.code(404).send('You have requested an unknown route.')
     })
-    await fastify.register(helment)
+    await fastify.register(helmet, helmetOptions)
     await fastify.register(cors, corsOptions)
     await fastify.register(compress)
 
@@ -110,6 +112,11 @@ const corsOptions: FastifyCorsOptions = {
         cb(new Error("Not allowed"), false)
     },
     methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-request-id'],
     credentials: true
+}
+
+const helmetOptions: FastifyHelmetOptions = {
+    contentSecurityPolicy: !env.isDevelopment ? undefined : false,
+    crossOriginEmbedderPolicy: false
 }
