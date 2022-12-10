@@ -1,4 +1,3 @@
-import { IncomingMessage } from 'http';
 import { PrismaClient } from "@prisma/client";
 import * as jwt from 'jsonwebtoken'
 import { User } from '@generated/type-graphql'

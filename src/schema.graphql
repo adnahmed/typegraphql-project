@@ -266,8 +266,7 @@ type Query {
 
 enum Role {
   admin
-  expert
-  farmer
+  user
 }
 
 type User {

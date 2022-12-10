@@ -1,5 +1,5 @@
 import { IsEmail, Length } from "class-validator";
-import { ArgsType, Field } from "type-graphql";
+import { ArgsType, Field, Int } from "type-graphql";
 
 @ArgsType()
 class LoginArgs {
