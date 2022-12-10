@@ -1,29 +1,10 @@
 import { Arg, Args, ArgsType, Authorized, Ctx, Field, Int, Mutation, Query, Resolver } from "type-graphql";
 import { User, UserCreateInput } from '@generated/type-graphql'
-import Context from '../types/context.interface';
+import Context from '../Types/context.interface';
 import bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 import env from '../env';
-import { IsEmail, Length } from "class-validator";
-
-@ArgsType()
-class LoginArgs {
-    @Field()
-    @Length(8)
-    password: string
-
-    /* TODO: locale aware mobile phone validation.
-    * @IsMobilePhone() 
-    */
-    // eslint-disable-next-line type-graphql/wrong-decorator-signature
-    @Field(type => Int, { nullable: true })
-    @Length(10) // TODO: remove this
-    mobilePhone?: number
-
-    @Field({ nullable: true })
-    @IsEmail()
-    email?: string
-}
+import LoginArgs from "../Types/Args/LoginArgs";
 
 @Resolver(of => User)
 export class UserResolver {
