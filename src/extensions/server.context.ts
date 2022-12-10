@@ -5,11 +5,15 @@ import { User } from '@generated/type-graphql'
 import { JwtPayload } from "jsonwebtoken";
 import { isString } from "class-validator";
 import { FastifyRequest } from 'fastify'
-import Context from "../types/context.interface";
+import Context from "../Types/context.interface";
 import env from '../env'
 import { Logger } from './logger.service';
 const logger = new Logger();
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+    log: ['query', 'error', 'info', 'warn'],
+    errorFormat: env.isDevelopment ? 'colorless' : 'minimal'
+});
+
 async function getUser(token: string): Promise<User | undefined> {
     function isJwtPayload(payload: string | JwtPayload): payload is JwtPayload {
         return typeof payload === 'object' && payload.sub !== undefined;
