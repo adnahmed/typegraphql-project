@@ -14,9 +14,9 @@ import helmet, { FastifyHelmetOptions } from '@fastify/helmet'
 import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastify'
 
 import env from './env'
-import Context from "./types/context.interface";
+import Context from "./Types/context.interface";
 import { bootstrap_pubSub, cache } from './redis'
-import { UserResolver } from './models/User';
+import { UserResolver } from './Resolvers/User';
 import authChecker from "./authorization/authChecker";
 import getContext from "./extensions/server.context";
 import { PinoLoggerOptions } from "fastify/types/logger";
@@ -58,9 +58,9 @@ void (async () => {
         csrfPrevention: true,
         introspection: true,
         plugins: [
-            env.isDev 
-            ? ApolloServerPluginLandingPageLocalDefault() 
-            : ApolloServerPluginLandingPageProductionDefault(),
+            env.isDev
+                ? ApolloServerPluginLandingPageLocalDefault()
+                : ApolloServerPluginLandingPageProductionDefault(),
             fastifyApolloDrainPlugin(fastify)
         ]
     })
