@@ -12,17 +12,20 @@ datasource db {
 }
 
 model User {
+  /// @TypeGraphQL.omit(output: false, input: true)
   id          String  @id @default(uuid())
   firstName   String  @db.VarChar(16)
   lastName    String  @db.VarChar(16)
-  address     String  @db.VarChar(100)
   region      String  @db.VarChar(30)
+  city        String
   country     Country
   email       String? @unique @db.VarChar(255)
   mobilePhone Int?    @unique
   /// @TypeGraphQL.omit(output: true)
   password    String
   roles       Role[]
+  /// @TypeGraphQL.omit(output: true, input: true)
+  lastSeen    DateTime?
 }
 
 enum Role {

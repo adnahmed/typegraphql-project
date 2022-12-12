@@ -56,7 +56,7 @@ void (async () => {
     const server = new ApolloServer<Context>({
         schema,
         csrfPrevention: true,
-        introspection: true,
+        introspection: env.isDevelopment,
         plugins: [
             env.isDev
                 ? ApolloServerPluginLandingPageLocalDefault()

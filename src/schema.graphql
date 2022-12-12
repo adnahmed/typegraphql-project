@@ -257,6 +257,7 @@ enum Country {
 
 type Mutation {
   createAccount(user: UserCreateInput!): String!
+  signOut: User!
 }
 
 type Query {
@@ -270,7 +271,7 @@ enum Role {
 }
 
 type User {
-  address: String!
+  city: String!
   country: Country!
   email: String
   firstName: String!
@@ -282,11 +283,10 @@ type User {
 }
 
 input UserCreateInput {
-  address: String!
+  city: String!
   country: Country!
   email: String
   firstName: String!
-  id: String
   lastName: String!
   mobilePhone: Int
   password: String!
